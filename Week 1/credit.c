@@ -40,6 +40,7 @@ int main(void)
         base *= 10;
     }
 
+    // Get sum of the card number based on Luhn's Algo
     int theSum = sumOfDigits(cardDigitsArray, lengthOfDigits);
     printf("The sum is: %i\n", theSum);
 
@@ -73,7 +74,7 @@ int main(void)
         printf("MASTERCARD\n");
         return 0;
     }
-    
+
     printf("INVALID\n");
 }
 
