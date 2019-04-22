@@ -60,14 +60,14 @@ int main(int argc, string argv[])
             char *new = malloc((2) * sizeof(string));
             strcpy(new, possibleLettersArray[i]);
             strcat(new, possibleLettersArray[j]);
-			char *pw = crypt(new, salt);
-			if (strcmp(pw, hashPW) == 0)
-			{
-				printf("%s\n", new);
-				found = true;
-				return 0;
-			}
-			// push this concat into old[counter]
+      			char *pw = crypt(new, salt);
+      			if (strcmp(pw, hashPW) == 0)
+      			{
+      				printf("%s\n", new);
+      				found = true;
+      				return 0;
+      			}
+			      // push this concat into old[counter]
             comboA[counter] = new;
             counter ++;
         }
@@ -89,13 +89,13 @@ int main(int argc, string argv[])
             char *new = malloc((5) * sizeof(string));
             strcpy(new, comboA[i]);
             strcat(new, possibleLettersArray[j]);
-			char *pw = crypt(new, salt);
-			if (strcmp(pw, hashPW) == 0)
-			{
-				printf("%s\n", new);
-				found = true;
-				return 0;
-			}
+      			char *pw = crypt(new, salt);
+      			if (strcmp(pw, hashPW) == 0)
+      			{
+      				printf("%s\n", new);
+      				found = true;
+      				return 0;
+      			}
             comboB[counter] = new;
             counter ++;
         }
@@ -120,14 +120,14 @@ int main(int argc, string argv[])
             char *new = malloc((5) * sizeof(string));
             strcpy(new, comboB[i]);
             strcat(new, possibleLettersArray[j]);
-	        char *pw = crypt(new, salt);
-			// if match, set bool to true, return 0
-			if (strcmp(pw, hashPW) == 0)
-			{
-				printf("%s\n", new);
-				found = true;
-				return 0;
-			}
+	          char *pw = crypt(new, salt);
+      			// if match, set bool to true, return 0
+      			if (strcmp(pw, hashPW) == 0)
+      			{
+      				printf("%s\n", new);
+      				found = true;
+      				return 0;
+      			}
             comboA[counter] = new;
             counter ++;
         }
@@ -155,12 +155,12 @@ int main(int argc, string argv[])
 
             //compare hash to input
             char *pw = crypt(new, salt);
-			if (strcmp(pw, hashPW) == 0)
-			{
-				printf("%s\n", new);
-				found = true;
-				return 0;
-			}
+      			if (strcmp(pw, hashPW) == 0)
+      			{
+      				printf("%s\n", new);
+      				found = true;
+      				return 0;
+      			}
             //free memory immediately
             free(new);
         }
