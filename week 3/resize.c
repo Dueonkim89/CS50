@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
             // free scanline
             free(scanline);
             // recreate scanline
-            scanline = malloc((originalWidth * 4) * sizeof(RGBTRIPLE));
+            scanline = malloc((originalWidth * converted) * sizeof(RGBTRIPLE));
         }
     }
 
