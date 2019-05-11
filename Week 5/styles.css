@@ -1,0 +1,60 @@
+body
+{
+    background-color: #e9ecef;
+}
+
+.breadcrumb a
+{
+    text-decoration: none;
+}
+
+.navbar
+{
+    margin-top: 2.25rem;
+}
+
+.jumbotron
+{
+    margin-top: .5rem;
+}
+
+.lead
+{
+    margin-top: 2.25rem;
+    margin-bottom: 4rem;
+}
+
+#pic1
+{
+    margin: 0 auto;
+    width: 775px;
+    height: 625px;
+}
+
+ul:nth-child(1) {
+  margin-top: 2.5rem;
+}
+
+.about-me-p
+{
+    font-size: 1.25rem;
+    font-weight: 300;
+    margin-top: 1.85rem;
+    margin-bottom: .75rem;
+}
+
+span
+{
+    font-weight: bold;
+    font-size: 3.5rem;
+}
+
+.lead .education
+{
+    margin-bottom: 1.5;
+}
+
+.ucsb
+{
+    margin-top: 2.5rem;
+}
