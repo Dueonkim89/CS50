@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block main %}
+
+<!-- http://getbootstrap.com/docs/4.1/components/alerts/ -->
+<h1 class="mb-3">Sheet</h1>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>House</th>
+            <th>Position</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for info in data %}
+            <tr>
+                <td>{{info[0]}}</td>
+                <td>{{info[1]}}</td>
+                <td>{{info[2]}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>    
+<script>
+    
+    
+</script>
+
+
+{% endblock %}
