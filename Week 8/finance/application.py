@@ -47,7 +47,48 @@ def index():
 @login_required
 def buy():
     """Buy shares of stock"""
-    return apology("TODO")
+    if request.method == "POST":
+        symbol = request.form.get("symbol")
+        shares = request.form.get("shares")
+
+        # if no symbol
+        if not symbol:
+            return apology("Please provide a symbol!")
+
+        # get price of the stock.
+        price = lookup(symbol)
+        if not price:
+            return apology("Invalid symbol!")
+
+        # not a positive integer
+        if int(shares) < 0:
+            return apology("Value must be greater than or equal to 1!")
+
+        # get userId from cookie session
+        userId = session["user_id"]
+
+        # get current cash balance of user
+        currentCash = db.execute("SELECT cash FROM users WHERE id = :id", id=userId)[0]["cash"]
+
+        # if not enough cash to purchase stocks
+        if currentCash < int(shares) * price['price']:
+            # return render_template("buy.html", number=shares, symbol=symbol)
+            return apology("Not enough funds!")
+
+        # update cash balance of user
+        db.execute("UPDATE users SET cash = :cash WHERE id = :id", id=userId, cash=currentCash - (int(shares) * price['price']))
+
+        # get datetime
+        dt = '{0:%m-%d-%Y %I:%M:%S %p}'.format(datetime.datetime.now())
+
+        # update database of user tx
+        db.execute("INSERT INTO history (id, stock, shares, price, datetime, symbol) VALUES (:id, :stock, :shares, :price, :datetime, :symbol)",
+            id=userId, stock=price['name'], shares=int(shares), price=price['price'], datetime=dt, symbol=price['symbol'])
+
+        # redirect to home page
+        return redirect("/")
+    else:
+        return render_template("buy.html")
 
 
 @app.route("/check", methods=["GET"])
