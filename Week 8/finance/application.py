@@ -1,4 +1,5 @@
 import os
+import datetime
 
 from cs50 import SQL
 from flask import Flask, flash, jsonify, redirect, render_template, request, session
@@ -40,7 +41,38 @@ db = SQL("sqlite:///finance.db")
 @login_required
 def index():
     """Show portfolio of stocks"""
-    return apology("TODO")
+    # get user id from session
+    userId = session["user_id"]
+
+    # cumulative list to hold all relevant info for user portfolio
+    userPortfolio = []
+    # var to hold the total of cash and stocks held
+    sum = 0
+
+    # get cash balance of user
+    cash = db.execute("SELECT cash FROM users WHERE id = :id", id=userId)[0]["cash"]
+    # add cash balance
+    sum = sum + cash
+    # format cash
+    cash = usd(cash)
+
+    # get users stock portfolio
+    userStocks = db.execute("SELECT DISTINCT symbol FROM history WHERE id = :id", id=userId)
+
+    # query total shares per stock
+    for stocks in userStocks:
+        stockInfo = db.execute("SELECT symbol, stock, SUM(shares) AS shares FROM history WHERE symbol = :symbol AND id = :id", symbol=stocks['symbol'], id=userId)[0]
+        userPortfolio.append(stockInfo)
+
+    # get current price of each stock, and the total value of each holding
+    for stock in userPortfolio:
+        currentPrice = lookup(stock['symbol'])
+        stock['price'] = usd(currentPrice["price"])
+        total = currentPrice["price"] * stock['shares']
+        sum = sum + total
+        stock['total'] = usd(total)
+
+    return render_template("index.html", cash=cash, stocks=userPortfolio, sum=usd(sum))
 
 
 @app.route("/buy", methods=["GET", "POST"])
@@ -75,8 +107,11 @@ def buy():
             # return render_template("buy.html", number=shares, symbol=symbol)
             return apology("Not enough funds!")
 
+        # new cash balance
+        updatedCash = round(currentCash - (int(shares) * price['price']), 2)
+
         # update cash balance of user
-        db.execute("UPDATE users SET cash = :cash WHERE id = :id", id=userId, cash=currentCash - (int(shares) * price['price']))
+        db.execute("UPDATE users SET cash = :cash WHERE id = :id", id=userId, cash=updatedCash)
 
         # get datetime
         dt = '{0:%m-%d-%Y %I:%M:%S %p}'.format(datetime.datetime.now())
@@ -94,7 +129,12 @@ def buy():
 @app.route("/check", methods=["GET"])
 def check():
     """Return true if username available, else false, in JSON format"""
-    return jsonify("TODO")
+    username=request.form.get("username")
+    # See if name exists inside db
+    rows = db.execute("SELECT * FROM users WHERE username = :username", username=username)
+    if len(rows) == 0 and len(username) > 1:
+        return jsonify(True)
+    return jsonify(False)
 
 
 @app.route("/history")
