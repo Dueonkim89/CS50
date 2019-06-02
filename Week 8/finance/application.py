@@ -141,6 +141,7 @@ def check():
 @login_required
 def history():
     """Show history of transactions"""
+
     return apology("TODO")
 
 
@@ -268,7 +269,55 @@ def register():
 @login_required
 def sell():
     """Sell shares of stock"""
-    return apology("TODO")
+    # get user id from session
+    userId = session["user_id"]
+
+    if request.method == "POST":
+        symbol = request.form.get("symbol")
+
+        # get users stock portfolio
+        userStocks = db.execute("SELECT DISTINCT symbol FROM history WHERE id = :id", id=userId)
+
+        symbolList = [stock['symbol'] for stock in userStocks]
+
+        # if no symbol entered or illegal stock
+        if not symbol or symbol not in symbolList:
+            return apology("Missing symbol!")
+
+        shares = int(request.form.get("shares"))
+
+        if shares < 0:
+            return apology("Please enter a positive integer!")
+
+        # get number of shares of the stock owned by user
+        stockInfo = db.execute("SELECT stock, SUM(shares) AS shares FROM history WHERE symbol = :symbol AND id = :id", symbol=symbol, id=userId)[0]
+
+        if shares > stockInfo['shares']:
+            return apology("Selling more than you own!")
+
+        # get market price of share
+        currentPrice = lookup(symbol)['price']
+
+        # get datetime
+        dt = '{0:%m-%d-%Y %I:%M:%S %p}'.format(datetime.datetime.now())
+
+        # update history table to record user sale
+        db.execute("INSERT INTO history (id, stock, shares, price, datetime, symbol) VALUES (:id, :stock, :shares, :price, :datetime, :symbol)", id=userId, stock=stockInfo['stock'], shares=-(shares), price=currentPrice, datetime=dt, symbol=symbol)
+
+        # get users new cash balance. (user input of shares * current market price of share)
+        currentCash = db.execute("SELECT cash FROM users WHERE id = :id", id=userId)[0]["cash"]
+        newCashBalance = round(currentCash + (shares * currentPrice), 2)
+
+        # update user table with new cash balance
+        db.execute("UPDATE users SET cash = :cash WHERE id = :id", id=userId, cash=newCashBalance)
+
+        # redirect to home page
+        return redirect("/")
+    else:
+        # get users stock portfolio
+        userStocks = db.execute("SELECT DISTINCT symbol FROM history WHERE id = :id", id=userId)
+
+        return render_template("sell.html", stocks=userStocks)
 
 
 def errorhandler(e):
