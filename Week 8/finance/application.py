@@ -141,8 +141,17 @@ def check():
 @login_required
 def history():
     """Show history of transactions"""
+    # get user id from session
+    userId = session["user_id"]
 
-    return apology("TODO")
+    # query the database to get symbol, shares, price, transaction date
+    txs = db.execute("SELECT symbol, shares, price, datetime FROM history WHERE id = :id", id=userId)
+
+    # format price for each tx
+    for tx in txs:
+        tx['price'] = usd(tx['price'])
+
+    return render_template("history.html", txs=txs)
 
 
 @app.route("/login", methods=["GET", "POST"])
