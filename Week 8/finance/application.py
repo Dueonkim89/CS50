@@ -92,9 +92,14 @@ def buy():
         if not price:
             return apology("Invalid symbol!")
 
-        # not a positive integer
-        if int(shares) < 0:
-            return apology("Value must be greater than or equal to 1!")
+        # if not a whole number
+        try:
+            int(shares)
+            # not a positive integer
+            if int(shares) < 0:
+                return apology("Value must be greater than or equal to 1!")
+        except ValueError:
+            return apology("Integers only!")
 
         # get userId from cookie session
         userId = session["user_id"]
@@ -118,7 +123,7 @@ def buy():
 
         # update database of user tx
         db.execute("INSERT INTO history (id, stock, shares, price, datetime, symbol) VALUES (:id, :stock, :shares, :price, :datetime, :symbol)",
-            id=userId, stock=price['name'], shares=int(shares), price=price['price'], datetime=dt, symbol=price['symbol'])
+                   id=userId, stock=price['name'], shares=int(shares), price=price['price'], datetime=dt, symbol=price['symbol'])
 
         # redirect to home page
         return redirect("/")
@@ -129,7 +134,7 @@ def buy():
 @app.route("/check", methods=["GET"])
 def check():
     """Return true if username available, else false, in JSON format"""
-    username=request.form.get("username")
+    username = request.args.get("username")
     # See if name exists inside db
     rows = db.execute("SELECT * FROM users WHERE username = :username", username=username)
     if len(rows) == 0 and len(username) > 1:
